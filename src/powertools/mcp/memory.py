@@ -1,5 +1,7 @@
 """MCP tools for memory management."""
 
+from typing import Any
+
 from mcp.server import Server
 from mcp.types import TextContent, Tool
 
@@ -9,7 +11,7 @@ from powertools.core.memory import MemoryCategory, MemoryManager
 def register_memory_tools(server: Server, memory_manager: MemoryManager) -> None:
     """Register memory management tools with the MCP server."""
 
-    @server.list_tools()
+    @server.list_tools()  # type: ignore[untyped-decorator,no-untyped-call]
     async def list_tools() -> list[Tool]:
         return [
             Tool(
@@ -123,8 +125,8 @@ def register_memory_tools(server: Server, memory_manager: MemoryManager) -> None
             ),
         ]
 
-    @server.call_tool()
-    async def call_tool(name: str, arguments: dict) -> list[TextContent]:
+    @server.call_tool()  # type: ignore[untyped-decorator]
+    async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
         try:
             if name == "add_memory":
                 try:
@@ -155,7 +157,7 @@ def register_memory_tools(server: Server, memory_manager: MemoryManager) -> None
 
             elif name == "search_memory":
                 try:
-                    category = (
+                    search_category: MemoryCategory | None = (
                         MemoryCategory(arguments["category"]) if arguments.get("category") else None
                     )
                 except ValueError as e:
@@ -164,7 +166,7 @@ def register_memory_tools(server: Server, memory_manager: MemoryManager) -> None
                 results = memory_manager.search(
                     query=arguments["query"],
                     limit=arguments.get("limit", 10),
-                    category=category,
+                    category=search_category,
                 )
 
                 if not results:
@@ -179,14 +181,14 @@ def register_memory_tools(server: Server, memory_manager: MemoryManager) -> None
 
             elif name == "list_memories":
                 try:
-                    category = (
+                    list_category: MemoryCategory | None = (
                         MemoryCategory(arguments["category"]) if arguments.get("category") else None
                     )
                 except ValueError as e:
                     return [TextContent(type="text", text=f"Invalid category: {e}")]
 
                 memories = memory_manager.list_all(
-                    category=category,
+                    category=list_category,
                     limit=arguments.get("limit", 20),
                 )
 

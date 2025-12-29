@@ -4,8 +4,6 @@ Thank you for your interest in contributing to Powertools! This document provide
 
 ## Development Workflow
 
-### Branch Protection
-
 The `main` branch is protected. All changes must be made via pull requests:
 
 1. **Create a feature branch** from `main`
@@ -23,10 +21,6 @@ The `main` branch is protected. All changes must be made via pull requests:
    ```
 
 4. **Open a PR** on GitHub and merge when ready
-
-**Direct commits to `main` are not allowed** - all changes must go through the PR process.
-
-**Note for solo developers**: The repository owner can merge their own PRs without requiring external reviews. When additional contributors join, this can be adjusted to require peer reviews.
 
 ## Setup
 
@@ -48,18 +42,14 @@ cd powertools
 # Install dependencies (including dev tools)
 uv pip install -e ".[dev]"
 
+# Run linting checks
+./script/lint
+
 # Run tests
-pytest
-
-# Format code
-ruff format .
-
-# Lint code
-ruff check .
-
-# Type check
-mypy src/
+./script/test
 ```
+
+**Note:** The `script/lint` and `script/test` scripts automatically find the project root using git, so they can be run from any directory in the repository.
 
 ## Code Style
 
@@ -73,7 +63,7 @@ mypy src/
 
 ### Import Organization
 
-- Import modules at the top of files (no inline imports)
+- Import modules at the top of files (no inline imports), unless unavoidable
 - Prefer module imports over individual function imports when importing multiple items:
 
   ```python
@@ -116,7 +106,10 @@ mypy src/
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run all tests (quiet mode, shows output only on failure)
+./script/test
+
+# Or run pytest directly
 pytest
 
 # Run specific test file
@@ -173,14 +166,15 @@ test: add tests for hierarchical task ID generation
 
 1. **Update documentation** if you're adding features or changing behavior
 2. **Add tests** for new functionality
-3. **Ensure all tests pass** (`pytest`)
-4. **Format and lint** your code (`ruff format . && ruff check .`)
-5. **Type check** passes (`mypy src/`)
-6. **Write clear PR description** explaining:
+3. **Run linting checks** (`./script/lint`) - ensures formatting, linting, and type checking pass
+4. **Run tests** (`./script/test`) - ensures all tests pass with coverage
+5. **Write clear PR description** explaining:
    - What changes you made
    - Why you made them
    - Any breaking changes
    - How to test the changes
+
+**Note:** The `script/lint` and `script/test` scripts run all checks automatically. You can also run individual tools directly if needed.
 
 ### PR Title
 
@@ -201,6 +195,9 @@ powertools/
 │   ├── mcp/            # MCP server tools
 │   └── storage/        # Storage backends
 ├── tests/              # Test suite
+├── script/             # Development scripts
+│   ├── lint            # Run all linting checks
+│   └── test            # Run tests with coverage
 ├── .github/            # GitHub workflows and configs
 └── pyproject.toml      # Project configuration
 ```

@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function check_formatting() {
+    if uv run ruff format --check . > /dev/null 2>&1; then
+        echo "✓ Formatting check passed"
+    else
+        echo "✗ Formatting check failed. Run 'ruff format .' to fix."
+        echo ""
+        echo "Detailed output:"
+        uv run ruff format --check .
+        exit 1
+    fi
+}
+
+function check_linting() {
+    if uv run ruff check . > /dev/null 2>&1; then
+        echo "✓ Linting check passed"
+    else
+        echo "✗ Linting check failed. Run 'ruff check --fix .' to auto-fix some issues."
+        echo ""
+        echo "Detailed output:"
+        uv run ruff check .
+        exit 1
+    fi
+}
+
+function check_types() {
+    if uv run mypy src/ > /dev/null 2>&1; then
+        echo "✓ Type checking passed"
+    else
+        echo "✗ Type checking failed"
+        echo ""
+        echo "Detailed output:"
+        uv run mypy src/
+        exit 1
+    fi
+}
+
+function main() {
+    # Find git root and change to it
+    root=$(git rev-parse --show-toplevel 2>/dev/null)
+    if [ -z "$root" ]; then
+        echo "✗ Error: Not in a git repository"
+        exit 1
+    fi
+    cd "$root" || exit 1
+
+    # Check if uv is available
+    if ! command -v uv &> /dev/null; then
+        echo "✗ Error: uv is not installed or not in PATH"
+        exit 1
+    fi
+
+    check_formatting
+    check_linting
+    check_types
+
+    echo "🎉 All linting checks passed!"
+    exit 0
+}
+
+main

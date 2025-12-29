@@ -3,6 +3,7 @@
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import fast_yaml as yaml  # noqa: N813 - imported as yaml for easy reversion
 
@@ -66,7 +67,7 @@ def get_project_config_dir() -> Path:
     return Path.cwd() / ".powertools"
 
 
-def load_yaml_file(path: Path) -> dict:
+def load_yaml_file(path: Path) -> dict[str, Any]:
     """Load a YAML file, returning empty dict if not found."""
     if not path.exists():
         return {}
@@ -74,7 +75,7 @@ def load_yaml_file(path: Path) -> dict:
         return yaml.safe_load(f) or {}
 
 
-def merge_configs(base: dict, override: dict) -> dict:
+def merge_configs(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
     """Deep merge two config dictionaries, override takes precedence."""
     result = base.copy()
     for key, value in override.items():
@@ -88,7 +89,7 @@ def merge_configs(base: dict, override: dict) -> dict:
 def load_config() -> Config:
     """Load configuration from user and project levels, with env overrides."""
     # Start with defaults
-    config_dict: dict = {}
+    config_dict: dict[str, Any] = {}
 
     # Load user-level config
     user_config_path = get_user_config_dir() / "config.yaml"

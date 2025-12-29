@@ -15,6 +15,7 @@ import logging
 import platform
 import sys
 import time
+from typing import Any
 
 if platform.machine() != "arm64" or platform.system() != "Darwin":
     print("Error: powertools-embed requires Apple Silicon Mac (M1/M2/M3/M4)")
@@ -23,7 +24,7 @@ if platform.machine() != "arm64" or platform.system() != "Darwin":
 
 try:
     import mlx.core as mx  # noqa: F401 - imported to verify mlx is available
-    from mlx_embeddings.utils import load as load_model
+    from mlx_embeddings.utils import load as load_model  # type: ignore[import-untyped]
 except ImportError:
     print("Error: mlx-embeddings not installed. Install with:")
     print("  uv pip install powertools")
@@ -53,7 +54,7 @@ _tokenizer = None
 _model_name = None
 
 
-def get_model():
+def get_model() -> tuple[Any, Any]:
     """Get or load the embedding model (lazy loading)."""
     global _model, _tokenizer, _model_name
 
@@ -91,7 +92,7 @@ def compute_embeddings(texts: list[str]) -> list[list[float]]:
     embeddings = outputs.text_embeds
 
     # Convert to Python list
-    return embeddings.tolist()
+    return embeddings.tolist()  # type: ignore[no-any-return]
 
 
 async def health(request: Request) -> JSONResponse:
@@ -232,7 +233,7 @@ routes = [
 app = Starlette(routes=routes)
 
 
-def main():
+def main() -> None:
     """Main entry point for powertools-embed command."""
     parser = argparse.ArgumentParser(
         description="Powertools Embedding Server - MLX-powered embeddings for Apple Silicon"

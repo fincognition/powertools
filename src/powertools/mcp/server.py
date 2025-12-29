@@ -3,6 +3,7 @@
 import asyncio
 import os
 from pathlib import Path
+from typing import Any
 
 import uvicorn
 from mcp.server import Server
@@ -37,13 +38,13 @@ def create_app(project_dir: Path | None = None) -> Starlette:
     server = create_server(project_dir)
     sse = SseServerTransport("/sse")
 
-    async def handle_sse(request):
+    async def handle_sse(request: Any) -> None:
         # Note: request._send is the ASGI send callable (private API but standard pattern)
         # The MCP SSE transport requires the ASGI scope, receive, and send callables
         async with sse.connect_sse(request.scope, request.receive, request._send) as streams:
             await server.run(streams[0], streams[1], server.create_initialization_options())
 
-    async def health(request):
+    async def health(request: Any) -> JSONResponse:
         return JSONResponse({"status": "ok", "server": "powertools"})
 
     # Debug mode from environment (default: False for production)
@@ -60,7 +61,9 @@ def create_app(project_dir: Path | None = None) -> Starlette:
     return app
 
 
-async def run_server(host: str = "0.0.0.0", port: int = 8765, project_dir: Path | None = None):
+async def run_server(
+    host: str = "0.0.0.0", port: int = 8765, project_dir: Path | None = None
+) -> None:
     """Run the MCP server."""
     app = create_app(project_dir)
     config = uvicorn.Config(app, host=host, port=port, log_level="info")
@@ -68,7 +71,7 @@ async def run_server(host: str = "0.0.0.0", port: int = 8765, project_dir: Path 
     await server.serve()
 
 
-def main():
+def main() -> None:
     """Entry point for running the MCP server."""
     # Get project directory from environment or use current directory
     project_dir_str = os.environ.get("POWERTOOLS_PROJECT_DIR")

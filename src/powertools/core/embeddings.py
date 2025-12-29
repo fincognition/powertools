@@ -4,6 +4,8 @@ This module provides a client for generating embeddings via the powertools-embed
 daemon, which runs as a local HTTP server on the host machine.
 """
 
+from typing import Any
+
 import httpx
 
 from powertools.core.config import load_config
@@ -79,7 +81,7 @@ class EmbeddingClient:
     def __enter__(self) -> "EmbeddingClient":
         return self
 
-    def __exit__(self, *args) -> None:
+    def __exit__(self, *args: Any) -> None:
         self.close()
 
 
@@ -148,7 +150,7 @@ class AsyncEmbeddingClient:
     async def __aenter__(self) -> "AsyncEmbeddingClient":
         return self
 
-    async def __aexit__(self, *args) -> None:
+    async def __aexit__(self, *args: Any) -> None:
         await self.close()
 
 
