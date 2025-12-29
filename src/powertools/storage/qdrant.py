@@ -100,9 +100,9 @@ class QdrantStore:
         self.ensure_collection()
 
         # Build filter if conditions provided
-        query_filter = None
+        query_filter: Filter | None = None
         if filter_conditions:
-            must = [
+            must: Sequence[FieldCondition] = [
                 FieldCondition(key=k, match=MatchValue(value=v))
                 for k, v in filter_conditions.items()
             ]
