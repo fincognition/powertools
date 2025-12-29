@@ -184,6 +184,54 @@ Use conventional commit format for PR titles (they'll be used in changelogs):
 feat: add support for custom embedding models
 ```
 
+## Releases and Versioning
+
+Powertools uses [python-semantic-release](https://python-semantic-release.readthedocs.io/) to automatically manage versions and create releases based on conventional commit messages.
+
+### How It Works
+
+1. **When a PR is merged to `main`:**
+
+   - CI runs lint-and-test checks
+   - If checks pass, semantic-release analyzes commits since the last release
+   - If commits indicate a version bump is needed, semantic-release will:
+     - Update the version in `pyproject.toml`
+     - Create a git tag (e.g., `v0.2.0`)
+     - Generate a changelog entry
+     - Build a wheel package
+     - Create a GitHub release with the wheel and changelog
+     - Build and publish Docker images
+   - If no version bump is needed, the release step is skipped
+
+2. **Version Bump Rules:**
+
+   - `feat:` commits → **Minor version** bump (0.1.0 → 0.2.0)
+   - `fix:` commits → **Patch version** bump (0.1.0 → 0.1.1)
+   - `BREAKING CHANGE:` in commit body or `!` after type → **Major version** bump (0.1.0 → 1.0.0)
+   - `chore:`, `docs:`, `refactor:`, `test:` → No version bump (unless breaking)
+
+3. **Manual Version Bumps:**
+   - **Do not manually edit the version in `pyproject.toml`** - semantic-release manages it automatically
+   - If you need to force a specific version bump, use the appropriate commit message:
+     - `feat: ...` for minor bump
+     - `fix: ...` for patch bump
+     - `feat!: ...` or include `BREAKING CHANGE:` for major bump
+
+### Examples
+
+```bash
+# This will trigger a minor version bump (0.1.0 → 0.2.0)
+feat: add support for custom embedding models
+
+# This will trigger a patch version bump (0.1.0 → 0.1.1)
+fix: handle missing Qdrant connection gracefully
+
+# This will trigger a major version bump (0.1.0 → 1.0.0)
+feat!: change API authentication method
+
+BREAKING CHANGE: API now requires OAuth2 instead of API keys
+```
+
 ## Project Structure
 
 ```

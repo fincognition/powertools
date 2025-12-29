@@ -40,6 +40,7 @@ dev = [
     "ruff>=0.8.0",
     "mypy>=1.13.0",
     "types-pyyaml>=6.0.0",
+    "python-semantic-release==10.5.3",
 ]
 
 [project.scripts]
@@ -88,3 +89,13 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "@abstractmethod",
 ]
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+build_command = "uv build --wheel"
+dist_path = "dist"
+version_variable = "pyproject.toml:project.version"
+commit_author = "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+changelog_file = "CHANGELOG.md"
+upload_to_vcs_release = true
+hvcs = "github"
