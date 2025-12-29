@@ -1,6 +1,5 @@
 """Qdrant vector database client wrapper."""
 
-from collections.abc import Sequence
 from typing import Any
 
 from qdrant_client import QdrantClient
@@ -102,11 +101,11 @@ class QdrantStore:
         # Build filter if conditions provided
         query_filter: Filter | None = None
         if filter_conditions:
-            must: Sequence[FieldCondition] = [
+            must: list[FieldCondition] = [
                 FieldCondition(key=k, match=MatchValue(value=v))
                 for k, v in filter_conditions.items()
             ]
-            query_filter = Filter(must=must)
+            query_filter = Filter(must=must)  # type: ignore[arg-type]
 
         results = self.client.query_points(
             collection_name=self.collection_name,
@@ -190,11 +189,11 @@ class QdrantStore:
         # Build filter if conditions provided
         query_filter: Filter | None = None
         if filter_conditions:
-            must: Sequence[FieldCondition] = [
+            must: list[FieldCondition] = [
                 FieldCondition(key=k, match=MatchValue(value=v))
                 for k, v in filter_conditions.items()
             ]
-            query_filter = Filter(must=must)
+            query_filter = Filter(must=must)  # type: ignore[arg-type]
 
         # Use scroll to get all points
         results, _ = self.client.scroll(

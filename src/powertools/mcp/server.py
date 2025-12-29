@@ -38,13 +38,13 @@ def create_app(project_dir: Path | None = None) -> Starlette:
     server = create_server(project_dir)
     sse = SseServerTransport("/sse")
 
-    async def handle_sse(request: Any) -> None:  # type: ignore[no-untyped-def]
+    async def handle_sse(request: Any) -> None:
         # Note: request._send is the ASGI send callable (private API but standard pattern)
         # The MCP SSE transport requires the ASGI scope, receive, and send callables
         async with sse.connect_sse(request.scope, request.receive, request._send) as streams:
             await server.run(streams[0], streams[1], server.create_initialization_options())
 
-    async def health(request: Any) -> JSONResponse:  # type: ignore[no-untyped-def]
+    async def health(request: Any) -> JSONResponse:
         return JSONResponse({"status": "ok", "server": "powertools"})
 
     # Debug mode from environment (default: False for production)
@@ -84,7 +84,7 @@ def main() -> None:
     if project_dir:
         print(f"Project directory: {project_dir}")
 
-    asyncio.run(run_server(host, port, project_dir))  # type: ignore[no-untyped-call]
+    asyncio.run(run_server(host, port, project_dir))
 
 
 if __name__ == "__main__":

@@ -144,7 +144,7 @@ def status() -> None:
 @embed.command()
 @click.option("--lines", "-n", default=50, help="Number of lines to show")
 @click.option("--stderr", "-e", is_flag=True, help="Show stderr instead of stdout")
-def logs(lines: int, stderr: bool):
+def logs(lines: int, stderr: bool) -> None:
     """Show daemon logs."""
     stdout_logs, stderr_logs = daemon.get_logs(lines=lines)
 
@@ -172,4 +172,4 @@ def serve(host: str, port: int, model: str | None) -> None:
         sys.argv.extend(["--model", model])
 
     # Run the server
-    server.main()  # type: ignore[no-untyped-call]
+    server.main()

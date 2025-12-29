@@ -11,7 +11,7 @@ from powertools.core.tasks import TaskManager, TaskPriority, TaskStatus, TaskTyp
 def register_task_tools(server: Server, task_manager: TaskManager) -> None:
     """Register task management tools with the MCP server."""
 
-    @server.list_tools()  # type: ignore[untyped-decorator]
+    @server.list_tools()  # type: ignore[untyped-decorator,no-untyped-call]
     async def list_tools() -> list[Tool]:
         return [
             Tool(
@@ -228,29 +228,32 @@ def register_task_tools(server: Server, task_manager: TaskManager) -> None:
                 return [TextContent(type="text", text="\n".join(lines))]
 
             elif name == "get_task":
-                task = task_manager.get(arguments["id"])
+                task = task_manager.get(arguments["id"])  # type: ignore[assignment]
                 if task is None:
                     return [TextContent(type="text", text=f"Task not found: {arguments['id']}")]
 
+                # mypy doesn't narrow the type after the None check
+                # task is guaranteed to be non-None after the check above
+                task_obj = task
                 lines = [
-                    f"Task: {task.id}",
-                    f"Title: {task.title}",
-                    f"Status: {task.status.value}",
-                    f"Priority: P{task.priority.value}",
-                    f"Type: {task.type.value}",
+                    f"Task: {task_obj.id}",
+                    f"Title: {task_obj.title}",
+                    f"Status: {task_obj.status.value}",
+                    f"Priority: P{task_obj.priority.value}",
+                    f"Type: {task_obj.type.value}",
                 ]
-                if task.description:
-                    lines.append(f"Description: {task.description}")
-                if task.context:
-                    lines.append(f"Context: {task.context}")
-                if task.parent:
-                    lines.append(f"Parent: {task.parent}")
-                if task.blocked_by:
-                    lines.append(f"Blocked by: {', '.join(task.blocked_by)}")
-                if task.blocks:
-                    lines.append(f"Blocks: {', '.join(task.blocks)}")
-                if task.tags:
-                    lines.append(f"Tags: {', '.join(task.tags)}")
+                if task_obj.description:
+                    lines.append(f"Description: {task_obj.description}")
+                if task_obj.context:
+                    lines.append(f"Context: {task_obj.context}")
+                if task_obj.parent:
+                    lines.append(f"Parent: {task_obj.parent}")
+                if task_obj.blocked_by:
+                    lines.append(f"Blocked by: {', '.join(task_obj.blocked_by)}")
+                if task_obj.blocks:
+                    lines.append(f"Blocks: {', '.join(task_obj.blocks)}")
+                if task_obj.tags:
+                    lines.append(f"Tags: {', '.join(task_obj.tags)}")
 
                 return [TextContent(type="text", text="\n".join(lines))]
 

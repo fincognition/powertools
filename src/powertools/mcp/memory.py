@@ -11,7 +11,7 @@ from powertools.core.memory import MemoryCategory, MemoryManager
 def register_memory_tools(server: Server, memory_manager: MemoryManager) -> None:
     """Register memory management tools with the MCP server."""
 
-    @server.list_tools()  # type: ignore[untyped-decorator]
+    @server.list_tools()  # type: ignore[untyped-decorator,no-untyped-call]
     async def list_tools() -> list[Tool]:
         return [
             Tool(
@@ -157,7 +157,7 @@ def register_memory_tools(server: Server, memory_manager: MemoryManager) -> None
 
             elif name == "search_memory":
                 try:
-                    category: MemoryCategory | None = (
+                    search_category: MemoryCategory | None = (
                         MemoryCategory(arguments["category"]) if arguments.get("category") else None
                     )
                 except ValueError as e:
@@ -166,7 +166,7 @@ def register_memory_tools(server: Server, memory_manager: MemoryManager) -> None
                 results = memory_manager.search(
                     query=arguments["query"],
                     limit=arguments.get("limit", 10),
-                    category=category,
+                    category=search_category,
                 )
 
                 if not results:
@@ -181,14 +181,14 @@ def register_memory_tools(server: Server, memory_manager: MemoryManager) -> None
 
             elif name == "list_memories":
                 try:
-                    category: MemoryCategory | None = (
+                    list_category: MemoryCategory | None = (
                         MemoryCategory(arguments["category"]) if arguments.get("category") else None
                     )
                 except ValueError as e:
                     return [TextContent(type="text", text=f"Invalid category: {e}")]
 
                 memories = memory_manager.list_all(
-                    category=category,
+                    category=list_category,
                     limit=arguments.get("limit", 20),
                 )
 

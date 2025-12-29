@@ -54,7 +54,7 @@ _tokenizer = None
 _model_name = None
 
 
-def get_model() -> tuple[Any, Any]:  # type: ignore[no-any-return]
+def get_model() -> tuple[Any, Any]:
     """Get or load the embedding model (lazy loading)."""
     global _model, _tokenizer, _model_name
 
@@ -62,7 +62,7 @@ def get_model() -> tuple[Any, Any]:  # type: ignore[no-any-return]
         model_name = _model_name or DEFAULT_MODEL
         logger.info(f"Loading model: {model_name}")
         start = time.time()
-        _model, _tokenizer = load_model(model_name)  # type: ignore[no-untyped-call]
+        _model, _tokenizer = load_model(model_name)
         elapsed = time.time() - start
         logger.info(f"Model loaded in {elapsed:.2f}s")
 
@@ -74,7 +74,7 @@ def compute_embeddings(texts: list[str]) -> list[list[float]]:
     model, tokenizer = get_model()
 
     # Tokenize inputs
-    inputs = tokenizer.batch_encode_plus(  # type: ignore[no-untyped-call]
+    inputs = tokenizer.batch_encode_plus(
         texts,
         return_tensors="mlx",
         padding=True,
@@ -83,7 +83,7 @@ def compute_embeddings(texts: list[str]) -> list[list[float]]:
     )
 
     # Get embeddings
-    outputs = model(  # type: ignore[no-untyped-call]
+    outputs = model(
         inputs["input_ids"],
         attention_mask=inputs.get("attention_mask"),
     )
@@ -284,7 +284,7 @@ def main() -> None:
     logger.info(f"Model: {_model_name}")
 
     # Run server
-    uvicorn.run(  # type: ignore[no-untyped-call]
+    uvicorn.run(
         app,
         host=args.host,
         port=args.port,
