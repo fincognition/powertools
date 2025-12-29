@@ -27,7 +27,7 @@ try:
     from mlx_embeddings.utils import load as load_model  # type: ignore[import-untyped]
 except ImportError:
     print("Error: mlx-embeddings not installed. Install with:")
-    print("  uv pip install powertools-ai")
+    print("  uv pip install 'powertools-ai[mlx]'")
     print("  pt init")
     print("  # or")
     print("  pt embed install")
