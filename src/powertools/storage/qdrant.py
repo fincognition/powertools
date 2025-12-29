@@ -119,7 +119,9 @@ class QdrantStore:
             {
                 "id": r.payload.get("_id") if r.payload else None,
                 "score": r.score,
-                "payload": {k: v for k, v in (r.payload.items() if r.payload else []) if k != "_id"},
+                "payload": {
+                    k: v for k, v in (r.payload.items() if r.payload else []) if k != "_id"
+                },
             }
             for r in results.points
         ]
@@ -205,7 +207,9 @@ class QdrantStore:
         return [
             {
                 "id": r.payload.get("_id") if r.payload else None,
-                "payload": {k: v for k, v in (r.payload.items() if r.payload else []) if k != "_id"},
+                "payload": {
+                    k: v for k, v in (r.payload.items() if r.payload else []) if k != "_id"
+                },
             }
             for r in results
         ]

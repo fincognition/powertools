@@ -60,7 +60,9 @@ def create_app(project_dir: Path | None = None) -> Starlette:
     return app
 
 
-async def run_server(host: str = "0.0.0.0", port: int = 8765, project_dir: Path | None = None) -> None:
+async def run_server(
+    host: str = "0.0.0.0", port: int = 8765, project_dir: Path | None = None
+) -> None:
     """Run the MCP server."""
     app = create_app(project_dir)
     config = uvicorn.Config(app, host=host, port=port, log_level="info")
