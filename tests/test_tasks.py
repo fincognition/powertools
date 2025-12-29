@@ -147,8 +147,8 @@ class TestTaskManager:
 
     def test_hierarchical_task_ids(self, task_manager):
         """Test that child tasks get hierarchical IDs."""
-        parent = task_manager.create(title="Parent", task_type=TaskType.EPIC)
-        child = task_manager.create(title="Child", parent=parent.id)
+        parent = task_manager.create(title="Parent", task_type=TaskType.TASK)
+        child = task_manager.create(title="Child", parent=parent.id, task_type=TaskType.SUBTASK)
 
         assert child.id.startswith(f"{parent.id}.")
         assert child.parent == parent.id
