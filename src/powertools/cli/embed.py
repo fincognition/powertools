@@ -172,4 +172,4 @@ def serve(host: str, port: int, model: str | None) -> None:
         sys.argv.extend(["--model", model])
 
     # Run the server
-    server.main()  # type: ignore[no-untyped-call]
+    server.main()
