@@ -34,18 +34,28 @@ jobs:
           ls -lh dist/*.whl
       
       - name: Generate release notes from conventional commits
-        id: changelog-ci
-        uses: saadmk11/changelog-ci@v1.2.0
+        id: changelog
+        uses: ardalanamini/auto-changelog@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref_name }}
-          output-file: false  # Don't create CHANGELOG.md, just output to variable
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          release-name: ${{ github.ref_name }}
+          commit-types: |
+            feat    : ✨ Features
+            fix     : 🪲 Bug Fixes
+            docs    : 📚 Documentation
+            refactor: ♻️ Refactoring
+            perf    : ⚡ Performance
+            test    : ✔ Tests
+            chore   : 🔧 Chores
+          default-commit-type: Other Changes
+          mention-authors: true
+          include-compare-link: true
       
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*.whl  # Only wheels, no sdist
-          body: ${{ steps.changelog-ci.outputs.changelog }}
+          body: ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: false
         env:
