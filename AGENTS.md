@@ -242,6 +242,11 @@ container:
 - Use conventional commits: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`
 - Keep commits atomic and focused
 
+### Git Workflow
+
+- **Branch naming**: Use the same name for local and remote branches (e.g., `git checkout -b feat/my-feature` and `git push -u origin feat/my-feature`)
+- **Review before push**: Do not push commits without user review first. Commit locally and wait for approval before pushing to remote.
+
 ## Roadmap
 
 ### Completed
