@@ -24,13 +24,15 @@ dependencies = [
     "orjson>=3.9.0",
     "pydantic>=2.0.0",
     "rich>=13.0.0",
-    # MLX embeddings (Apple Silicon only)
-    "mlx-embeddings>=0.0.5",
     "starlette>=0.41.0",
     "uvicorn>=0.32.0",
 ]
 
 [project.optional-dependencies]
+mlx = [
+    # MLX embeddings (Apple Silicon only)
+    "mlx-embeddings>=0.0.5",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.24.0",

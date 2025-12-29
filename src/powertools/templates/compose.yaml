@@ -13,10 +13,7 @@ services:
     restart: unless-stopped
 
   powertools:
-    image: ghcr.io/powertools/powertools:latest
-    build:
-      context: ../..
-      dockerfile: Dockerfile
+    image: ghcr.io/fincognition/powertools:latest
     ports:
       - "8765:8765"
     environment:
