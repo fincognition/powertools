@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: macos-latest  # Required for MLX dependencies and ARM64 wheel
+    permissions:
+      contents: write  # Required to create releases
+    
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # Full history for changelog generation
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+      
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      
+      - name: Build wheel only (no sdist)
+        run: |
+          # Build only wheel, skip source distribution
+          uv build --wheel
+          # Verify wheel is ARM64
+          ls -lh dist/*.whl
+      
+      - name: Generate release notes from conventional commits
+        id: changelog-ci
+        uses: saadmk11/changelog-ci@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+          output-file: false  # Don't create CHANGELOG.md, just output to variable
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.whl  # Only wheels, no sdist
+          body: ${{ steps.changelog-ci.outputs.changelog }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
