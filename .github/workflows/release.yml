@@ -35,7 +35,7 @@ jobs:
       
       - name: Generate release notes from conventional commits
         id: changelog-ci
-        uses: saadmk11/changelog-ci@v1
+        uses: saadmk11/changelog-ci@v1.2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
