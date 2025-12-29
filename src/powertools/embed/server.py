@@ -15,6 +15,7 @@ import logging
 import platform
 import sys
 import time
+from typing import Any
 
 if platform.machine() != "arm64" or platform.system() != "Darwin":
     print("Error: powertools-embed requires Apple Silicon Mac (M1/M2/M3/M4)")

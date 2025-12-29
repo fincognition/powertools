@@ -4,6 +4,8 @@ This module provides a client for generating embeddings via the powertools-embed
 daemon, which runs as a local HTTP server on the host machine.
 """
 
+from typing import Any
+
 import httpx
 
 from powertools.core.config import load_config
