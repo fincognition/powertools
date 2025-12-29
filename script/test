@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function run_tests() {
+    # Run tests quietly, only show output on failure
+    # Use -q for quiet mode, --tb=no to suppress tracebacks, --cov-report= to suppress coverage output
+    if uv run pytest --cov=powertools --cov-report=xml --cov-report= -q --tb=no > /dev/null 2>&1; then
+        echo "✓ Tests passed"
+    else
+        echo "✗ Tests failed"
+        echo ""
+        echo "Detailed test output:"
+        uv run pytest --cov=powertools --cov-report=term -v --tb=short
+        exit 1
+    fi
+}
+
+function main() {
+    # Find git root and change to it
+    root=$(git rev-parse --show-toplevel 2>/dev/null)
+    if [ -z "$root" ]; then
+        echo "✗ Error: Not in a git repository"
+        exit 1
+    fi
+    cd "$root" || exit 1
+
+    # Check if uv is available
+    if ! command -v uv &> /dev/null; then
+        echo "✗ Error: uv is not installed or not in PATH"
+        exit 1
+    fi
+
+    run_tests
+}
+
+main
