@@ -2,19 +2,22 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
-  release:
-    runs-on: macos-latest  # Required for MLX dependencies and ARM64 wheel
+  lint-and-test:
+    runs-on: macos-latest  # Required for MLX dependencies
     permissions:
-      contents: write  # Required to create releases
+      contents: read
+      pull-requests: write  # For coverage comment on PRs
     
     steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0  # Full history for changelog generation
+      - name: Checkout
+        uses: actions/checkout@v6
       
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -26,58 +29,87 @@ jobs:
         with:
           python-version: '3.12'
       
-      - name: Build wheel only (no sdist)
-        run: |
-          # Build only wheel, skip source distribution
-          uv build --wheel
-          # Verify wheel is ARM64
-          ls -lh dist/*.whl
+      - name: Install dependencies
+        run: uv pip install --system -e ".[dev,mlx]"
       
-      - name: Generate release notes from conventional commits
-        id: changelog
-        uses: ardalanamini/auto-changelog@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          release-name: ${{ github.ref_name }}
-          commit-types: |
-            feat    : ✨ Features
-            fix     : 🪲 Bug Fixes
-            docs    : 📚 Documentation
-            refactor: ♻️ Refactoring
-            perf    : ⚡ Performance
-            test    : ✔ Tests
-            chore   : 🔧 Chores
-          default-commit-type: Other Changes
-          mention-authors: true
-          include-compare-link: true
+      - name: Run linting checks
+        run: bash script/lint
       
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
+      - name: Run tests with coverage
+        run: bash script/test
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          files: dist/*.whl  # Only wheels, no sdist
-          body: ${{ steps.changelog.outputs.changelog }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  release:
+    needs: lint-and-test
+    runs-on: macos-latest  # Required for MLX dependencies and ARM64 wheel
+    permissions:
+      contents: write  # Required to create releases and push tags
+      id-token: write  # Required for semantic-release
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Semantic Version Release
+        id: semantic-release
+        uses: python-semantic-release/python-semantic-release@v10.5.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          build: false  # Skip build in action (runs in Docker, can't build ARM64 wheel)
+          # The action will update version, generate changelog, commit, tag, and create release
+          # It commits and pushes directly to main
+      
+      - name: Pull updated changes
+        if: steps.semantic-release.outputs.released == 'true'
+        run: git pull
+          # Pull the version update and changelog that semantic-release committed
+      
+      - name: Install uv
+        if: steps.semantic-release.outputs.released == 'true'
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+      
+      - name: Set up Python
+        if: steps.semantic-release.outputs.released == 'true'
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        if: steps.semantic-release.outputs.released == 'true'
+        run: uv pip install --system -e ".[dev,mlx]"
+      
+      - name: Build wheel with new version
+        if: steps.semantic-release.outputs.released == 'true'
+        run: uv build --wheel
+      
+      - name: Upload wheel to GitHub Release
+        if: steps.semantic-release.outputs.released == 'true'
+        uses: python-semantic-release/publish-action@v10.5.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.semantic-release.outputs.tag }}
+          files: dist/*.whl
 
   docker-build:
+    needs: release
+    if: needs.release.outputs.released == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write  # Required to push to ghcr.io
     
     steps:
-      - uses: actions/checkout@v6
-      
-      - name: Extract version from tag
-        id: version
-        run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          VERSION=${TAG_NAME#v}  # Remove 'v' prefix if present
-          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Tag: $TAG_NAME, Version: $VERSION"
+      - name: Checkout
+        uses: actions/checkout@v6
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -96,8 +128,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/fincognition/powertools:${{ steps.version.outputs.tag }}
+            ghcr.io/fincognition/powertools:${{ needs.release.outputs.tag }}
             ghcr.io/fincognition/powertools:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
