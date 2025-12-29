@@ -12,7 +12,7 @@ console = Console()
 
 
 @click.group()
-def embed():
+def embed() -> None:
     """Manage the embedding server daemon."""
     pass
 
@@ -21,7 +21,7 @@ def embed():
 @click.option("--host", default="127.0.0.1", help="Host to bind to")
 @click.option("--port", default=8384, type=int, help="Port to bind to")
 @click.option("--model", default=None, help="Model to use (default: Qwen3-Embedding-0.6B-4bit)")
-def install(host: str, port: int, model: str | None):
+def install(host: str, port: int, model: str | None) -> None:
     """Install the embedding daemon (launchd)."""
     console.print("[bold]Installing powertools-embed daemon...[/bold]")
 
@@ -47,7 +47,7 @@ def install(host: str, port: int, model: str | None):
 
 
 @embed.command()
-def uninstall():
+def uninstall() -> None:
     """Uninstall the embedding daemon."""
     console.print("[bold]Uninstalling powertools-embed daemon...[/bold]")
 
@@ -61,7 +61,7 @@ def uninstall():
 
 
 @embed.command()
-def start():
+def start() -> None:
     """Start the embedding daemon."""
     success, message = daemon.start()
 
@@ -73,7 +73,7 @@ def start():
 
 
 @embed.command()
-def stop():
+def stop() -> None:
     """Stop the embedding daemon."""
     success, message = daemon.stop()
 
@@ -85,7 +85,7 @@ def stop():
 
 
 @embed.command()
-def restart():
+def restart() -> None:
     """Restart the embedding daemon."""
     success, message = daemon.restart()
 
@@ -97,7 +97,7 @@ def restart():
 
 
 @embed.command()
-def status():
+def status() -> None:
     """Show embedding daemon status."""
     status_info = daemon.get_status()
 
@@ -164,7 +164,7 @@ def logs(lines: int, stderr: bool):
 @click.option("--host", default="127.0.0.1", help="Host to bind to")
 @click.option("--port", default=8384, type=int, help="Port to bind to")
 @click.option("--model", default=None, help="Model to use")
-def serve(host: str, port: int, model: str | None):
+def serve(host: str, port: int, model: str | None) -> None:
     """Run embedding server in foreground (for testing)."""
     # Build args for the server
     sys.argv = ["powertools-embed", "--host", host, "--port", str(port)]
@@ -172,4 +172,4 @@ def serve(host: str, port: int, model: str | None):
         sys.argv.extend(["--model", model])
 
     # Run the server
-    server.main()
+    server.main()  # type: ignore[no-untyped-call]

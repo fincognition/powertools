@@ -1,5 +1,6 @@
 """Qdrant vector database client wrapper."""
 
+from collections.abc import Sequence
 from typing import Any
 
 from qdrant_client import QdrantClient
@@ -116,9 +117,9 @@ class QdrantStore:
 
         return [
             {
-                "id": r.payload.get("_id"),
+                "id": r.payload.get("_id") if r.payload else None,
                 "score": r.score,
-                "payload": {k: v for k, v in r.payload.items() if k != "_id"},
+                "payload": {k: v for k, v in (r.payload.items() if r.payload else []) if k != "_id"},
             }
             for r in results.points
         ]
@@ -144,6 +145,8 @@ class QdrantStore:
             return None
 
         payload = results[0].payload
+        if not payload:
+            return None
         return {
             "id": payload.get("_id"),
             "payload": {k: v for k, v in payload.items() if k != "_id"},
@@ -183,9 +186,9 @@ class QdrantStore:
         self.ensure_collection()
 
         # Build filter if conditions provided
-        query_filter = None
+        query_filter: Filter | None = None
         if filter_conditions:
-            must = [
+            must: Sequence[FieldCondition] = [
                 FieldCondition(key=k, match=MatchValue(value=v))
                 for k, v in filter_conditions.items()
             ]
@@ -201,8 +204,8 @@ class QdrantStore:
 
         return [
             {
-                "id": r.payload.get("_id"),
-                "payload": {k: v for k, v in r.payload.items() if k != "_id"},
+                "id": r.payload.get("_id") if r.payload else None,
+                "payload": {k: v for k, v in (r.payload.items() if r.payload else []) if k != "_id"},
             }
             for r in results
         ]
@@ -211,7 +214,7 @@ class QdrantStore:
         """Get the number of points in the collection."""
         self.ensure_collection()
         info = self.client.get_collection(self.collection_name)
-        return info.points_count
+        return info.points_count or 0
 
     def health_check(self) -> bool:
         """Check if Qdrant is healthy."""

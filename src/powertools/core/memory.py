@@ -118,7 +118,7 @@ class MemoryManager:
         query: str,
         limit: int = 10,
         category: MemoryCategory | None = None,
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         """Search memories semantically.
 
         Args:

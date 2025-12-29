@@ -9,6 +9,7 @@ import plistlib
 import shutil
 import subprocess
 from pathlib import Path
+from typing import Any
 
 # Daemon identifiers
 DAEMON_LABEL = "ai.powertools.embed"
@@ -50,7 +51,7 @@ def generate_plist(
     port: int = DEFAULT_PORT,
     model: str | None = None,
     log_dir: Path | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """Generate launchd plist dictionary."""
 
     # Build program arguments
@@ -109,9 +110,9 @@ def is_running() -> bool:
         return False
 
 
-def get_status() -> dict:
+def get_status() -> dict[str, Any]:
     """Get detailed daemon status."""
-    status = {
+    status: dict[str, Any] = {
         "installed": is_installed(),
         "running": False,
         "pid": None,

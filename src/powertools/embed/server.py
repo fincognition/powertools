@@ -23,7 +23,7 @@ if platform.machine() != "arm64" or platform.system() != "Darwin":
 
 try:
     import mlx.core as mx  # noqa: F401 - imported to verify mlx is available
-    from mlx_embeddings.utils import load as load_model
+    from mlx_embeddings.utils import load as load_model  # type: ignore[import-untyped]
 except ImportError:
     print("Error: mlx-embeddings not installed. Install with:")
     print("  uv pip install powertools")
@@ -53,7 +53,7 @@ _tokenizer = None
 _model_name = None
 
 
-def get_model():
+def get_model() -> tuple[Any, Any]:  # type: ignore[no-any-return]
     """Get or load the embedding model (lazy loading)."""
     global _model, _tokenizer, _model_name
 
@@ -61,7 +61,7 @@ def get_model():
         model_name = _model_name or DEFAULT_MODEL
         logger.info(f"Loading model: {model_name}")
         start = time.time()
-        _model, _tokenizer = load_model(model_name)
+        _model, _tokenizer = load_model(model_name)  # type: ignore[no-untyped-call]
         elapsed = time.time() - start
         logger.info(f"Model loaded in {elapsed:.2f}s")
 
@@ -73,7 +73,7 @@ def compute_embeddings(texts: list[str]) -> list[list[float]]:
     model, tokenizer = get_model()
 
     # Tokenize inputs
-    inputs = tokenizer.batch_encode_plus(
+    inputs = tokenizer.batch_encode_plus(  # type: ignore[no-untyped-call]
         texts,
         return_tensors="mlx",
         padding=True,
@@ -82,7 +82,7 @@ def compute_embeddings(texts: list[str]) -> list[list[float]]:
     )
 
     # Get embeddings
-    outputs = model(
+    outputs = model(  # type: ignore[no-untyped-call]
         inputs["input_ids"],
         attention_mask=inputs.get("attention_mask"),
     )
@@ -91,7 +91,7 @@ def compute_embeddings(texts: list[str]) -> list[list[float]]:
     embeddings = outputs.text_embeds
 
     # Convert to Python list
-    return embeddings.tolist()
+    return embeddings.tolist()  # type: ignore[no-any-return]
 
 
 async def health(request: Request) -> JSONResponse:
@@ -232,7 +232,7 @@ routes = [
 app = Starlette(routes=routes)
 
 
-def main():
+def main() -> None:
     """Main entry point for powertools-embed command."""
     parser = argparse.ArgumentParser(
         description="Powertools Embedding Server - MLX-powered embeddings for Apple Silicon"
@@ -283,7 +283,7 @@ def main():
     logger.info(f"Model: {_model_name}")
 
     # Run server
-    uvicorn.run(
+    uvicorn.run(  # type: ignore[no-untyped-call]
         app,
         host=args.host,
         port=args.port,

@@ -1,5 +1,7 @@
 """MCP tools for task management."""
 
+from typing import Any
+
 from mcp.server import Server
 from mcp.types import TextContent, Tool
 
@@ -9,7 +11,7 @@ from powertools.core.tasks import TaskManager, TaskPriority, TaskStatus, TaskTyp
 def register_task_tools(server: Server, task_manager: TaskManager) -> None:
     """Register task management tools with the MCP server."""
 
-    @server.list_tools()
+    @server.list_tools()  # type: ignore[untyped-decorator]
     async def list_tools() -> list[Tool]:
         return [
             Tool(
@@ -190,8 +192,8 @@ def register_task_tools(server: Server, task_manager: TaskManager) -> None:
             ),
         ]
 
-    @server.call_tool()
-    async def call_tool(name: str, arguments: dict) -> list[TextContent]:
+    @server.call_tool()  # type: ignore[untyped-decorator]
+    async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
         try:
             if name == "create_task":
                 try:
@@ -227,7 +229,7 @@ def register_task_tools(server: Server, task_manager: TaskManager) -> None:
 
             elif name == "get_task":
                 task = task_manager.get(arguments["id"])
-                if not task:
+                if task is None:
                     return [TextContent(type="text", text=f"Task not found: {arguments['id']}")]
 
                 lines = [
