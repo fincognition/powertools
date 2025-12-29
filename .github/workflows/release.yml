@@ -67,11 +67,8 @@ jobs:
             echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
             echo "tag=v${NEW_VERSION}" >> $GITHUB_OUTPUT
             
-            # Generate changelog (without committing)
-            semantic-release changelog --no-commit || true
-            
             # Try to commit and push version update (may fail on protected branches)
-            git add pyproject.toml CHANGELOG.md
+            git add pyproject.toml
             if git diff --staged --quiet; then
               echo "No changes to commit"
             elif git commit -m "chore: bump version to ${NEW_VERSION}"; then
