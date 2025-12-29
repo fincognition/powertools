@@ -35,13 +35,27 @@ jobs:
       - name: Install dependencies
         run: uv pip install --system python-semantic-release==10.5.3
       
+      - name: Create CHANGELOG.md if missing
+        run: |
+          if [ ! -f CHANGELOG.md ]; then
+            echo "# Changelog" > CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            echo "All notable changes to this project will be documented in this file." >> CHANGELOG.md
+          fi
+      
       - name: Semantic Version Release
         id: semantic-release
         run: |
           # Get current version before running semantic-release
           CURRENT_VERSION=$(grep -E '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
           
+          # Configure git for semantic-release
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
           # Run semantic-release version (updates pyproject.toml if new version needed)
+          # Use --no-commit to prevent automatic commits
+          # Set upload_to_vcs_release=false via env to prevent release creation
           semantic-release version --no-commit || true
           
           # Get new version
@@ -53,16 +67,24 @@ jobs:
             echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
             echo "tag=v${NEW_VERSION}" >> $GITHUB_OUTPUT
             
-            # Commit version update
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add pyproject.toml
-            git commit -m "chore: bump version to ${NEW_VERSION}"
-            git push
+            # Generate changelog (without committing)
+            semantic-release changelog --no-commit || true
             
-            # Create and push tag
-            git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
-            git push origin "v${NEW_VERSION}"
+            # Try to commit and push version update (may fail on protected branches)
+            git add pyproject.toml CHANGELOG.md
+            if git diff --staged --quiet; then
+              echo "No changes to commit"
+            elif git commit -m "chore: bump version to ${NEW_VERSION}"; then
+              git push || echo "Warning: Failed to push commit (branch may be protected)"
+            else
+              echo "Warning: Failed to commit version update"
+            fi
+            
+            # Create and push tag (tags can usually be pushed even to protected branches)
+            if ! git rev-parse "v${NEW_VERSION}" >/dev/null 2>&1; then
+              git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
+              git push origin "v${NEW_VERSION}" || echo "Warning: Failed to push tag"
+            fi
           else
             echo "released=false" >> $GITHUB_OUTPUT
             echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
@@ -70,6 +92,9 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Disable release creation in semantic-release
+          SEMANTIC_RELEASE_UPLOAD_TO_VCS_RELEASE: "false"
       
       - name: Generate Release Notes
         if: steps.semantic-release.outputs.released == 'true'
