@@ -5,13 +5,14 @@ set -euo pipefail
 function run_tests() {
     # Run tests quietly, only show output on failure
     # Use -q for quiet mode, --tb=no to suppress tracebacks, --cov-report= to suppress coverage output
-    if uv run pytest --cov=powertools --cov-report=xml --cov-report= -q --tb=no > /dev/null 2>&1; then
+    # --cov-branch enables branch coverage (recommended by Codecov)
+    if uv run pytest --cov=powertools --cov-branch --cov-report=xml --cov-report= -q --tb=no > /dev/null 2>&1; then
         echo "✓ Tests passed"
     else
         echo "✗ Tests failed"
         echo ""
         echo "Detailed test output:"
-        uv run pytest --cov=powertools --cov-report=term -v --tb=short
+        uv run pytest --cov=powertools --cov-branch --cov-report=term -v --tb=short
         exit 1
     fi
 }

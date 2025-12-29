@@ -7,6 +7,7 @@ Agentic workflow toolkit for developers. Provides persistent semantic memory and
 [![GitHub release](https://img.shields.io/github/release/fincognition/powertools.svg)](https://github.com/fincognition/powertools/releases)
 [![PyPI version](https://badge.fury.io/py/powertools-ai.svg)](https://badge.fury.io/py/powertools-ai)
 [![Homebrew](https://img.shields.io/badge/homebrew-coming%20soon-lightgrey.svg)](https://brew.sh)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS%20%7C%20Apple%20Silicon-lightgrey.svg)](https://www.apple.com/mac/)
