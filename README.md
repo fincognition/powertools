@@ -2,6 +2,16 @@
 
 Agentic workflow toolkit for developers. Provides persistent semantic memory and task tracking for AI-assisted development.
 
+[![CI](https://github.com/fincognition/powertools/actions/workflows/ci.yml/badge.svg)](https://github.com/fincognition/powertools/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/fincognition/powertools/branch/main/graph/badge.svg)](https://codecov.io/gh/fincognition/powertools)
+[![GitHub release](https://img.shields.io/github/release/fincognition/powertools.svg)](https://github.com/fincognition/powertools/releases)
+[![PyPI version](https://badge.fury.io/py/powertools.svg)](https://badge.fury.io/py/powertools)
+[![Homebrew](https://img.shields.io/badge/homebrew-coming%20soon-lightgrey.svg)](https://brew.sh)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![Platform: macOS](https://img.shields.io/badge/platform-macOS%20%7C%20Apple%20Silicon-lightgrey.svg)](https://www.apple.com/mac/)
+[![Status: Alpha](https://img.shields.io/badge/status-alpha-orange.svg)](https://github.com/fincognition/powertools)
+
 **Requirements:** Apple Silicon Mac (M1/M2/M3/M4), macOS 14+
 
 ## Install
