@@ -1,5 +1,5 @@
 [project]
-name = "powertools"
+name = "powertools-ai"
 version = "0.1.0"
 description = "Agentic workflow toolkit with persistent memory and task tracking"
 readme = "README.md"
