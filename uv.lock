@@ -1776,7 +1776,6 @@ dependencies = [
     { name = "fastyaml-rs" },
     { name = "httpx" },
     { name = "mcp" },
-    { name = "mlx-embeddings" },
     { name = "orjson" },
     { name = "pydantic" },
     { name = "qdrant-client" },
@@ -1794,6 +1793,9 @@ dev = [
     { name = "ruff" },
     { name = "types-pyyaml" },
 ]
+mlx = [
+    { name = "mlx-embeddings" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -1801,7 +1803,7 @@ requires-dist = [
     { name = "fastyaml-rs", specifier = ">=0.3.0" },
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "mcp", specifier = ">=1.0.0" },
-    { name = "mlx-embeddings", specifier = ">=0.0.5" },
+    { name = "mlx-embeddings", marker = "extra == 'mlx'", specifier = ">=0.0.5" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.13.0" },
     { name = "orjson", specifier = ">=3.9.0" },
     { name = "pydantic", specifier = ">=2.0.0" },
@@ -1815,7 +1817,7 @@ requires-dist = [
     { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.0" },
     { name = "uvicorn", specifier = ">=0.32.0" },
 ]
-provides-extras = ["dev"]
+provides-extras = ["mlx", "dev"]
 
 [[package]]
 name = "propcache"
