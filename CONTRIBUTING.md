@@ -9,6 +9,7 @@ Thank you for your interest in contributing to Powertools! This document provide
 The `main` branch is protected. All changes must be made via pull requests:
 
 1. **Create a feature branch** from `main`
+
    ```bash
    git checkout -b feat/your-feature-name
    ```
@@ -16,13 +17,16 @@ The `main` branch is protected. All changes must be made via pull requests:
 2. **Make your changes** and commit them using [conventional commits](#commit-messages)
 
 3. **Push your branch** and create a pull request
+
    ```bash
    git push origin feat/your-feature-name
    ```
 
-4. **Open a PR** on GitHub - your PR will be reviewed before merging
+4. **Open a PR** on GitHub and merge when ready
 
-**Direct commits to `main` are not allowed** - all changes must go through the PR review process.
+**Direct commits to `main` are not allowed** - all changes must go through the PR process.
+
+**Note for solo developers**: The repository owner can merge their own PRs without requiring external reviews. When additional contributors join, this can be adjusted to require peer reviews.
 
 ## Setup
 
@@ -71,11 +75,12 @@ mypy src/
 
 - Import modules at the top of files (no inline imports)
 - Prefer module imports over individual function imports when importing multiple items:
+
   ```python
   # Good
   from powertools.core import config
   config.load_config()
-  
+
   # Avoid
   from powertools.core.config import load_config, save_config, get_user_config_dir
   ```
@@ -84,10 +89,11 @@ mypy src/
 
 - Public functions (CLI commands, public APIs): no prefix
 - Private/internal functions: use `_` prefix
+
   ```python
   def init():  # Public CLI command
       ...
-  
+
   def _check_platform():  # Private helper
       ...
   ```
@@ -222,4 +228,3 @@ powertools/
 - Check `AGENTS.md` for detailed architecture and API documentation
 
 Thank you for contributing! 🎉
-
