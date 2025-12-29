@@ -1,0 +1,72 @@
+[project]
+name = "powertools"
+version = "0.1.0"
+description = "Agentic workflow toolkit with persistent memory and task tracking"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Sumit Arora", email = "sumit@fincognition.com" }]
+keywords = ["ai", "agents", "mcp", "memory", "tasks"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+dependencies = [
+    "click>=8.1.0",
+    "fastyaml-rs>=0.3.0",
+    "httpx>=0.27.0",
+    "qdrant-client>=1.12.0",
+    "mcp>=1.0.0",
+    "orjson>=3.9.0",
+    "pydantic>=2.0.0",
+    "rich>=13.0.0",
+    # MLX embeddings (Apple Silicon only)
+    "mlx-embeddings>=0.0.5",
+    "starlette>=0.41.0",
+    "uvicorn>=0.32.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "types-pyyaml>=6.0.0",
+]
+
+[project.scripts]
+pt = "powertools.cli:cli"
+powertools-embed = "powertools.embed.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/powertools"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

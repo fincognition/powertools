@@ -1,0 +1,32 @@
+# Powertools Docker Compose configuration
+# Generated for project: {project_name}
+
+name: powertools-{project_name}
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
+  powertools:
+    image: ghcr.io/powertools/powertools:latest
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    ports:
+      - "8765:8765"
+    environment:
+      - POWERTOOLS_PROJECT={project_name}
+      - EMBEDDING_API_BASE=http://{host_address}:8384
+      - QDRANT_URL=http://qdrant:6333
+    depends_on:
+      - qdrant
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
+    name: powertools-{project_name}_qdrant_data

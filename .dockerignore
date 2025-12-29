@@ -1,0 +1,53 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (README.md needed for build, others not)
+AGENTS.md
+CLAUDE.md
+LICENSE
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Testing
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Local data
+.powertools/
+
+# Lock files (we'll copy uv.lock explicitly if needed)
+uv.lock
+
+# CI/CD
+.github/
+.cursor/
+

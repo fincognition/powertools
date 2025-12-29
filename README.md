@@ -1,0 +1,132 @@
+# Powertools
+
+Agentic workflow toolkit for developers. Provides persistent semantic memory and task tracking for AI-assisted development.
+
+**Requirements:** Apple Silicon Mac (M1/M2/M3/M4), macOS 14+
+
+## Install
+
+```bash
+# Homebrew (coming soon)
+# brew install powertools
+
+# uv (fast Python package manager)
+uv pip install powertools
+```
+
+## Setup
+
+```bash
+# Initialize (one-time) - installs embedding daemon, downloads model
+pt init
+
+# Initialize a project
+cd your-project
+pt project-init -n myproject
+
+# Start containers
+docker compose -f .powertools/compose.yaml up -d
+```
+
+## Usage
+
+### Memory (Semantic Search)
+
+```bash
+# Add facts to project memory
+pt memory add "API uses JWT tokens with RS256 signing" --category architecture
+pt memory add "Use snake_case for database columns" --category convention
+
+# Search semantically
+pt memory search "authentication"
+pt memory search "naming conventions"
+
+# List and manage
+pt memory list
+pt memory show mem-abc123
+pt memory delete mem-abc123
+```
+
+### Tasks (Hierarchical Tracking)
+
+```bash
+# Create tasks
+pt task create "Implement user auth" --priority 1
+pt task create "Add JWT middleware" --parent pt-a1b2
+
+# View ready tasks (unblocked, by priority)
+pt task ready
+
+# Update status
+pt task update pt-a1b2 --status in_progress
+pt task update pt-a1b2 --status done
+
+# Add dependencies
+pt task dep add pt-c3d4 pt-a1b2  # c3d4 blocked by a1b2
+```
+
+### MCP Server
+
+Connect your AI agent to the MCP server at `http://localhost:8765/sse`.
+
+Available tools:
+
+- `add_memory`, `search_memory`, `list_memories`, `delete_memory`
+- `create_task`, `get_ready_tasks`, `get_task`, `update_task`, `add_dependency`, `list_tasks`
+
+## Commands
+
+```bash
+pt init              # Initialize ~/.powertools/ and install embedding daemon
+pt project-init      # Initialize .powertools/ in current directory
+
+pt memory add        # Add a fact
+pt memory search     # Semantic search
+pt memory list       # List all memories
+pt memory show       # Show memory details
+pt memory delete     # Delete a memory
+
+pt task create       # Create a task
+pt task ready        # List unblocked tasks by priority
+pt task show         # Show task details
+pt task update       # Update task status/content
+pt task list         # List/filter tasks
+pt task dep add/rm   # Manage dependencies
+
+pt embed status      # Check embedding daemon status
+pt embed start/stop  # Control daemon
+pt embed logs        # View daemon logs
+```
+
+## Architecture
+
+```
+Host (macOS Apple Silicon)
+├── powertools-embed (:8384)     # MLX embedding daemon (launchd)
+│   └── Qwen3-Embedding-0.6B
+│
+└── Docker/Podman/OrbStack
+    ├── Qdrant (:6333)           # Vector database
+    └── Powertools MCP (:8765)   # MCP server for agents
+```
+
+- Embeddings run natively on Apple Silicon GPU via MLX
+- Each project gets its own Qdrant collection (`pt_<project>`)
+- Compose file generated per-project in `.powertools/compose.yaml`
+
+## Configuration
+
+**~/.powertools/config.yaml**
+
+```yaml
+embedding:
+  api_base: http://localhost:8384
+  model: mlx-community/Qwen3-Embedding-0.6B-4bit-DWQ
+  dimensions: 1024
+qdrant:
+  url: http://localhost:6333
+```
+
+## License
+
+MIT
