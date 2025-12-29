@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function check_formatting() {
+    if uv run ruff format --check .; then
+        echo "✓ Formatting check passed"
+    else
+        echo "✗ Formatting check failed. Run 'ruff format .' to fix."
+        exit 1
+    fi
+}
+
+function check_linting() {
+    if uv run ruff check .; then
+        echo "✓ Linting check passed"
+    else
+        echo "✗ Linting check failed. Run 'ruff check --fix .' to auto-fix some issues."
+        exit 1
+    fi
+}
+
+function check_types() {
+    if uv run mypy src/; then
+        echo "✓ Type checking passed"
+    else
+        echo "✗ Type checking failed"
+        exit 1
+    fi
+}
+
+function main() {
+    # Check if we're in the project root
+    if [ ! -f "pyproject.toml" ]; then
+        echo "✗ Error: Must run from project root (where pyproject.toml is located)"
+        exit 1
+    fi
+
+    # Check if uv is available
+    if ! command -v uv &> /dev/null; then
+        echo "✗ Error: uv is not installed or not in PATH"
+        exit 1
+    fi
+
+    check_formatting
+    check_linting
+    check_types
+
+    echo "🎉 All linting checks passed!"
+    exit 0
+}
+
+main

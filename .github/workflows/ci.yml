@@ -30,14 +30,8 @@ jobs:
       - name: Install dependencies
         run: uv pip install --system -e ".[dev]"
       
-      - name: Check formatting with ruff
-        run: ruff format --check .
-      
-      - name: Lint with ruff
-        run: ruff check .
-      
-      - name: Type check with mypy
-        run: mypy src/
+      - name: Run linting checks
+        run: bash script/lint
       
       - name: Run tests with coverage
         run: pytest --cov=powertools --cov-report=xml --cov-report=term
