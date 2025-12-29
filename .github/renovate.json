@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "pip_requirements",
+        "pip_setup",
+        "pip-compile",
+        "setup-cfg",
+        "pyproject"
+      ],
+      "groupName": "Python dependencies"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "matchPackageNames": ["mlx-embeddings"],
+      "enabled": false,
+      "description": "MLX embeddings is Apple Silicon specific, updates may break compatibility"
+    }
+  ],
+  "timezone": "America/Los_Angeles"
+}
