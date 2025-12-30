@@ -76,6 +76,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# mypy stuff
+.mypy_cache/
+
 # Ruff stuff:
 .ruff_cache/
 
@@ -84,6 +87,9 @@ venv.bak/
 
 # Powertools local data
 .powertools/
+
+# Generated version file (hatch-vcs)
+src/powertools/_version.py
 
 # VSCode stuff
 .vscode/

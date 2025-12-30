@@ -41,7 +41,8 @@ jobs:
         id: changelog
         uses: ardalanamini/auto-changelog@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          release-name: ${{ steps.semantic-release.outputs.tag }}
       
       - name: Create GitHub Release
         if: steps.semantic-release.outputs.released == 'true'
@@ -72,6 +73,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: ${{ needs.release.outputs.tag }}
+          fetch-depth: 0  # Required for hatch-vcs to determine version from tags
       
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -82,15 +84,6 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      
-      - name: Update version in pyproject.toml
-        run: |
-          # Update version to match the release tag
-          VERSION="${{ needs.release.outputs.version }}"
-          sed -i.bak "s/^version = \".*\"/version = \"${VERSION}\"/" pyproject.toml
-          rm pyproject.toml.bak
-          echo "Updated version to ${VERSION}"
-          grep '^version = ' pyproject.toml
       
       - name: Install build dependencies
         run: uv pip install --system build wheel
@@ -126,14 +119,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: ${{ needs.release.outputs.tag }}
-      
-      - name: Update version in pyproject.toml
-        run: |
-          # Update version to match the release tag
-          VERSION="${{ needs.release.outputs.version }}"
-          sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" pyproject.toml
-          echo "Updated version to ${VERSION}"
-          grep '^version = ' pyproject.toml
+          fetch-depth: 0  # Required for hatch-vcs to determine version from tags
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
