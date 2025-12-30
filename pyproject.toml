@@ -1,6 +1,6 @@
 [project]
 name = "powertools-ai"
-version = "0.2.0"
+dynamic = ["version"] # Version is derived from git tags via hatch-vcs
 description = "Agentic workflow toolkit with persistent memory and task tracking"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -48,8 +48,14 @@ pt = "powertools.cli:cli"
 powertools-embed = "powertools.embed.server:main"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/powertools/_version.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/powertools"]
@@ -91,8 +97,6 @@ exclude_lines = [
 ]
 
 [tool.semantic_release]
-version_toml = ["pyproject.toml:project.version"]
-version_variable = "pyproject.toml:project.version"
 commit_author = "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
 hvcs = "github"
 upload_to_vcs_release = false
