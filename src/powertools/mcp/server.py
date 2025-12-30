@@ -28,11 +28,11 @@ def create_server(project_dir: Path | None = None) -> Server:
     memory_manager = MemoryManager(project_dir)
 
     # Register combined tools from both modules
-    @server.list_tools()  # type: ignore[no-untyped-call]
+    @server.list_tools()  # type: ignore[untyped-decorator,no-untyped-call]
     async def list_tools() -> list[Tool]:
         return get_task_tools() + get_memory_tools()
 
-    @server.call_tool()  # type: ignore[no-untyped-call]
+    @server.call_tool()  # type: ignore[untyped-decorator]
     async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
         # Try task tools first
         result = await handle_task_tool(name, arguments, task_manager)
