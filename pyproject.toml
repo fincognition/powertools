@@ -94,5 +94,5 @@ exclude_lines = [
 version_toml = ["pyproject.toml:project.version"]
 version_variable = "pyproject.toml:project.version"
 commit_author = "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-changelog_file = "CHANGELOG.md"
 hvcs = "github"
+upload_to_vcs_release = false
