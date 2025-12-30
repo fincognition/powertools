@@ -8,14 +8,15 @@ from typing import Any
 import uvicorn
 from mcp.server import Server
 from mcp.server.sse import SseServerTransport
+from mcp.types import TextContent, Tool
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
 from powertools.core.memory import MemoryManager
 from powertools.core.tasks import TaskManager
-from powertools.mcp.memory import register_memory_tools
-from powertools.mcp.tasks import register_task_tools
+from powertools.mcp.memory import get_memory_tools, handle_memory_tool
+from powertools.mcp.tasks import get_task_tools, handle_task_tool
 
 
 def create_server(project_dir: Path | None = None) -> Server:
@@ -26,9 +27,25 @@ def create_server(project_dir: Path | None = None) -> Server:
     task_manager = TaskManager(project_dir)
     memory_manager = MemoryManager(project_dir)
 
-    # Register tools
-    register_task_tools(server, task_manager)
-    register_memory_tools(server, memory_manager)
+    # Register combined tools from both modules
+    @server.list_tools()  # type: ignore[untyped-decorator,no-untyped-call]
+    async def list_tools() -> list[Tool]:
+        return get_task_tools() + get_memory_tools()
+
+    @server.call_tool()  # type: ignore[untyped-decorator]
+    async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
+        # Try task tools first
+        result = await handle_task_tool(name, arguments, task_manager)
+        if result is not None:
+            return result
+
+        # Try memory tools
+        result = await handle_memory_tool(name, arguments, memory_manager)
+        if result is not None:
+            return result
+
+        # Unknown tool
+        return [TextContent(type="text", text=f"Unknown tool: {name}")]
 
     return server
 
