@@ -143,3 +143,22 @@ jobs:
             ghcr.io/fincognition/powertools:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  pypi-publish:
+    needs: build-wheel
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Required for OIDC trusted publishing
+    environment:
+      name: pypi
+      url: https://pypi.org/project/powertools-ai/
+    
+    steps:
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-wheel
+          path: dist/
+      
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
