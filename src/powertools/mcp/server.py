@@ -36,13 +36,17 @@ def create_server(project_dir: Path | None = None) -> Server:
 def create_app(project_dir: Path | None = None) -> Starlette:
     """Create the Starlette ASGI app with SSE endpoint."""
     server = create_server(project_dir)
-    sse = SseServerTransport("/sse")
+    sse = SseServerTransport("/messages")
 
     async def handle_sse(request: Any) -> None:
         # Note: request._send is the ASGI send callable (private API but standard pattern)
         # The MCP SSE transport requires the ASGI scope, receive, and send callables
         async with sse.connect_sse(request.scope, request.receive, request._send) as streams:
             await server.run(streams[0], streams[1], server.create_initialization_options())
+
+    async def handle_messages(request: Any) -> Any:
+        # Handle POST messages from the client
+        return await sse.handle_post_message(request.scope, request.receive, request._send)
 
     async def health(request: Any) -> JSONResponse:
         return JSONResponse({"status": "ok", "server": "powertools"})
@@ -54,6 +58,7 @@ def create_app(project_dir: Path | None = None) -> Starlette:
         debug=debug,
         routes=[
             Route("/sse", handle_sse),
+            Route("/messages", handle_messages, methods=["POST"]),
             Route("/health", health),
         ],
     )
