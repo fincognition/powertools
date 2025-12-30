@@ -4,9 +4,9 @@ Agentic workflow toolkit for developers. Provides persistent semantic memory and
 
 [![CI](https://github.com/fincognition/powertools/actions/workflows/ci.yml/badge.svg)](https://github.com/fincognition/powertools/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/fincognition/powertools/branch/main/graph/badge.svg)](https://codecov.io/gh/fincognition/powertools)
-[![GitHub release](https://img.shields.io/github/release/fincognition/powertools.svg)](https://github.com/fincognition/powertools/releases)
-[![PyPI version](https://badge.fury.io/py/powertools-ai.svg)](https://badge.fury.io/py/powertools-ai)
-[![Homebrew](https://img.shields.io/badge/homebrew-coming%20soon-lightgrey.svg)](https://brew.sh)
+[![GitHub release](https://img.shields.io/github/v/release/fincognition/powertools)](https://github.com/fincognition/powertools/releases)
+[![PyPI version](https://img.shields.io/pypi/v/powertools-ai)](https://pypi.org/project/powertools-ai/)
+[![Homebrew](https://img.shields.io/badge/homebrew-tap-blue)](https://github.com/fincognition/homebrew-powertools)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
@@ -18,11 +18,12 @@ Agentic workflow toolkit for developers. Provides persistent semantic memory and
 ## Install
 
 ```bash
-# Homebrew (coming soon)
-# brew install powertools
+# Homebrew (recommended)
+brew tap fincognition/powertools
+brew install powertools-ai
 
-# uv (fast Python package manager)
-uv pip install powertools-ai
+# Or with uv (fast Python package manager)
+uv pip install powertools-ai[mlx]
 ```
 
 ## Setup
