@@ -16,6 +16,8 @@ services:
     image: ghcr.io/fincognition/powertools:latest
     ports:
       - "8765:8765"
+    volumes:
+      - ./.powertools:/app/.powertools
     environment:
       - POWERTOOLS_PROJECT={project_name}
       - EMBEDDING_API_BASE=http://{host_address}:8384

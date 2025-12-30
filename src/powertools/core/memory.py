@@ -182,15 +182,39 @@ class MemoryManager:
         Returns:
             List of Memory objects.
         """
-        memories = self.jsonl_store.list_all()
-
+        # Read from Qdrant (source of truth) instead of JSONL
+        filter_conditions = None
         if category:
-            memories = [m for m in memories if m.category == category]
+            filter_conditions = {"category": category.value}
+
+        results = self.vector_store.list_all(
+            filter_conditions=filter_conditions,
+            limit=limit,
+        )
+
+        # Convert Qdrant results to Memory objects
+        memories = []
+        for r in results:
+            payload = r["payload"]
+            try:
+                created = datetime.fromisoformat(payload.get("created", ""))
+            except (ValueError, TypeError):
+                created = datetime.now(UTC)
+
+            memory = Memory(
+                id=r["id"],
+                content=payload.get("content", ""),
+                source=payload.get("source"),
+                category=MemoryCategory(payload.get("category", "fact")),
+                confidence=payload.get("confidence", 1.0),
+                created=created,
+            )
+            memories.append(memory)
 
         # Sort by created date, newest first
         memories.sort(key=lambda m: m.created, reverse=True)
 
-        return memories[:limit]
+        return memories
 
     def delete(self, memory_id: str) -> bool:
         """Delete a memory.
