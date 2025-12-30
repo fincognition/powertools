@@ -2,6 +2,10 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+# Version for hatch-vcs (passed as build arg since .git is not available in Docker)
+ARG VERSION=0.0.0
+ENV SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION}
+
 # Install uv (pin version for reproducibility)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
