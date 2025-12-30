@@ -9,18 +9,14 @@ ENV SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION}
 # Install uv (pin version for reproducibility)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-# Copy dependency files first for better layer caching
-# README.md is needed because pyproject.toml references it
+# Copy all source files needed for install
 COPY pyproject.toml README.md ./
-# Copy lock file if it exists (for reproducible builds)
 COPY uv.lock* ./
-
-# Install dependencies (this layer will be cached unless dependencies change)
-RUN uv pip install --system --no-cache -e . && \
-    rm -rf /root/.cache
-
-# Copy application code (this layer changes most frequently)
 COPY src/ src/
+
+# Install package (not editable - production build)
+RUN uv pip install --system --no-cache . && \
+    rm -rf /root/.cache
 
 # Create runtime directory and set up non-root user
 RUN useradd -m -u 1000 powertools && \
